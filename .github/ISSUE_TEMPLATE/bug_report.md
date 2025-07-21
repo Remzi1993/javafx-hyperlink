@@ -4,35 +4,39 @@ about: Create a report to help us improve
 title: ''
 labels: ''
 assignees: ''
-
 ---
 
-**Describe the bug**
+**Describe the bug**  
 A clear and concise description of what the bug is.
 
-**To Reproduce**
+**Minimal Reproduction**  
+Provide the smallest possible code snippet that reproduces the issue:
+```java
+// your code here
+```
+
+**To Reproduce**  
 Steps to reproduce the behavior:
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
 4. See error
 
-**Expected behavior**
+**Expected behavior**  
 A clear and concise description of what you expected to happen.
 
-**Screenshots**
+**Screenshots**  
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Environment:**  
+ - OS: [e.g. Windows 11 / macOS 14 / Ubuntu 24.04]
+ - JDK version and flavour: [java -version or gradle -version] 
+ - JavaFX version: [e.g. 24.0.2]
+ - Library version: [e.g. 1.0.1]
+ - Build tool: [Maven/Gradle + version]
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+**Tried**  
+List things you already tried (upgrading, different JDK, etc.).
 
-**Additional context**
+**Additional context**  
 Add any other context about the problem here.
