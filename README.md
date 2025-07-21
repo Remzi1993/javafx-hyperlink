@@ -1,7 +1,6 @@
 # BrowserHyperlink
 
-[![Maven Central](https://img.shields.io/maven-central/v/info.remzi/javafx-hyperlink.svg)](https://central.sonatype.com/artifact/info.remzi/javafx-hyperlink)  
-![License](https://img.shields.io/github/license/Remzi1993/javafx-hyperlink.svg)
+[![Maven Central](https://img.shields.io/maven-central/v/info.remzi/javafx-hyperlink.svg)](https://central.sonatype.com/artifact/info.remzi/javafx-hyperlink)![License](https://img.shields.io/github/license/Remzi1993/javafx-hyperlink.svg)
 
 > A drop‑in **Java / JavaFX** replacement for  
 > `javafx.scene.control.Hyperlink` that always opens its target URI—`http`, `https`, `mailto`, custom schemes—in the
