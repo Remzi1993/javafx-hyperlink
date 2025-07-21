@@ -26,6 +26,5 @@ You will receive an initial acknowledgement within **5 business days**. If the r
 - I will work on a fix and publish a new stable release.
 - Once a fix is available you may disclose the issue publicly (or I will include credit in the release notes if you wish).
 
-If the report is rejected (e.g. expected behavior or out of scope), I will explain why.
-
+If the report is rejected (e.g. expected behavior or out of scope), I will explain why.  
 Thank you for helping keep BrowserHyperlink secure!
