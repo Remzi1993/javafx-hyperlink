@@ -3,7 +3,7 @@
 Thank you for your interest in contributing!
 
 1. **Fork → feature branch → PR.**  
-   Create a descriptive branch name (e.g. `feat/mailto-subject-support`).
+   Create a descriptive branch name (e.g. `feat: mailto and subject support`).
 
 2. **Follow conventional commits** (`feat:`, `fix:`, `docs:`, `chore:`, etc.).  
    See: https://www.conventionalcommits.org/
