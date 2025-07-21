@@ -102,7 +102,22 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
-                <version>${maven.gpg.plugin.version}</version>
+                <version>3.2.8</version>              <!-- newest as of Jul‑2025 -->
+                <configuration>
+                    <!-- Primary key fingerprint (40‑hex characters or short ID) -->
+                    <keyname>BBE9A71DDD0E659E23382EB1F5683DA549E22DDB</keyname>
+
+                    <!-- Let Maven read the pass‑phrase from an ENV variable -->
+                    <passphrase>${env.MAVEN_GPG_PASSPHRASE}</passphrase>
+
+                    <!-- Use loopback so gpg doesn't launch pinentry in CI -->
+                    <gpg.useagent>false</gpg.useagent>
+                    <gpg.executable>gpg</gpg.executable>
+                    <args>
+                        <arg>--pinentry-mode</arg><arg>loopback</arg>
+                    </args>
+                </configuration>
+
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
