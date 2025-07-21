@@ -5,11 +5,11 @@
 Only the **latest stable release** is supported with security updates and bug fixes.  
 Any pre‑release versions (alpha, beta, RC, snapshots) are **experimental** and receive **no support**.
 
-| Version | Supported |
-|---------|----------|
-| Latest stable (e.g. 1.0.1) | :white_check_mark: |
-| Any previous release | :x: |
-| Pre‑releases (alpha / beta / RC / snapshot) | :x: |
+| Version                                     | Supported |
+|---------------------------------------------|-----------|
+| Latest stable (e.g. 1.0.1)                  | ✅         |
+| Any previous release                        | ❌         |
+| Pre‑releases (alpha / beta / RC / snapshot) | ❌         |
 
 **Need help?** Always upgrade to the newest stable version **before** requesting assistance. Most issues are resolved by updating.
 
