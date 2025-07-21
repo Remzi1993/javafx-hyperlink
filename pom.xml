@@ -81,7 +81,9 @@
                 <executions>
                     <execution>
                         <id>attach-sources</id>
-                        <goals><goal>jar</goal></goals>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -93,7 +95,9 @@
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
-                        <goals><goal>jar</goal></goals>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -102,27 +106,37 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.2.8</version>              <!-- newest as of Jul‑2025 -->
-                <configuration>
-                    <!-- Primary key fingerprint (40‑hex characters or short ID) -->
-                    <keyname>BBE9A71DDD0E659E23382EB1F5683DA549E22DDB</keyname>
+                <version>3.2.8</version>
 
-                    <!-- Use loopback so gpg doesn't launch pinentry in CI -->
-                    <gpg.useagent>false</gpg.useagent>
-                    <gpg.executable>gpg</gpg.executable>
-                    <args>
-                        <arg>--pinentry-mode</arg><arg>loopback</arg>
-                    </args>
+                <configuration>
+                    <keyname>09ADA3A346567D4DBCC95D5761998A60B3A5A289</keyname>
+
+                    <!-- Pass‑phrase comes from ENV to satisfy “best practices” -->
+                    <passphrase>${env.MAVEN_GPG_PASSPHRASE}</passphrase>
+
+                    <!-- Correct tag names for 3.2.8 -->
+                    <useAgent>false</useAgent>          <!-- no pop‑up in batch mode -->
+                    <executable>gpg</executable>
+                    <gpgArguments>
+                        <arg>--pinentry-mode</arg>
+                        <arg>loopback</arg>
+                    </gpgArguments>
+
+                    <!-- Optional but nice -->
+                    <bestPractices>true</bestPractices>
                 </configuration>
 
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
                         <phase>verify</phase>
-                        <goals><goal>sign</goal></goals>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
+
 
             <!-- Upload to Maven Central Portal -->
             <plugin>
