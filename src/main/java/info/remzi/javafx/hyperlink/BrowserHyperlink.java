@@ -1,6 +1,7 @@
 package info.remzi.javafx.hyperlink;
 
 import javafx.scene.Node;
+import javafx.scene.control.Hyperlink;
 import java.awt.Desktop;
 import java.net.URI;
 
@@ -10,7 +11,7 @@ import java.net.URI;
  *
  * @author Remzi Cavdar - ict@remzi.info
  */
-public class BrowserHyperlink extends javafx.scene.control.Hyperlink {
+public class BrowserHyperlink extends Hyperlink {
 
     /**
      * Default constructor for BrowserHyperlink.

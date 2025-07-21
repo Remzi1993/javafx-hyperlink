@@ -1,46 +1,60 @@
 # BrowserHyperlink
 
-[![Maven Central](https://img.shields.io/maven-central/v/info.remzi/javafx-hyperlink.svg)](https://central.sonatype.com/artifact/info.remzi/javafx-hyperlink)
+[![Maven Central](https://img.shields.io/maven-central/v/info.remzi/javafx-hyperlink.svg)](https://central.sonatype.com/artifact/info.remzi/javafx-hyperlink)  
 ![License](https://img.shields.io/github/license/Remzi1993/javafx-hyperlink.svg)
 
-A tiny **Java/JavaFX** utility that subclasses `javafx.scene.control.Hyperlink` and automatically opens the given URL in the user’s default browser.
+> A drop‑in **Java / JavaFX** replacement for  
+> `javafx.scene.control.Hyperlink` that always opens its target URI—`http`, `https`, `mailto`, custom schemes—in the
+> user’s default browser.
 
 ---
 
-## Features
+## ✨ Features
 
-* **Drop‑in replacement** for the standard `Hyperlink`
-* No extra dependencies—just JavaFX itself
-* Works on all desktop platforms supported by JavaFX
-
----
-
-## Requirements
-
-| Tool       | Version         |
-|------------|-----------------|
-| **JDK**    | 22 or newer     |
-| **JavaFX** | 24.0.2 or newer |
+* **Plug & play** – use exactly like the standard `Hyperlink`
+* Handles `mailto:` (incl. `?subject=`) and any other URI scheme
+* Zero runtime dependencies beyond **JavaFX**
 
 ---
 
-## Installation
+## 🔧 Requirements
 
-### Maven
+| Tool        | Minimum version |
+|-------------|-----------------|
+| **SDK/JDK** | 22              |
+| **JavaFX**  | 24.0.2          |
+
+---
+
+## 📦 Usage
 
 ```xml
-<dependencies>
-    <!-- JavaFX BrowserHyperlink -->
-    <dependency>
-        <groupId>info.remzi</groupId>
-        <artifactId>javafx-hyperlink</artifactId>
-        <version>1.0.0</version>
-    </dependency>
+<dependency>
+    <groupId>info.remzi</groupId>
+    <artifactId>javafx-hyperlink</artifactId>
+    <version>1.0.1</version>
+</dependency>
+```
 
-    <!-- JavaFX -->
-    <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-controls</artifactId>
-        <version>24.0.2</version>
-    </dependency>
-</dependencies>
+## 🚀 Quick start examples
+
+```java
+import info.remzi.javafx.hyperlink.BrowserHyperlink;
+
+/* Regular link */
+BrowserHyperlink repo = new BrowserHyperlink("Source code", "https://github.com/Remzi1993/HvA-OOP2-practicumopdracht");
+
+/* Clickable e‑mail address */
+BrowserHyperlink email = new BrowserHyperlink("remzi.cavdar@hva.nl", "mailto:remzi.cavdar@hva.nl");
+
+/* mailto: with pre‑filled subject */
+BrowserHyperlink support = new BrowserHyperlink("Mail support", "mailto:support@example.com?subject=Hello%20BrowserHyperlink");
+```
+
+## 🛠️ Developing / releasing the library
+
+1. Insert your GPG key fingerprint in pom.xml ```<keyname>YOUR_40_HEX_FINGERPRINT</keyname>```
+2. Build & publish to Maven Central:
+   ```bash
+   ./mvnw clean deploy
+   ```
