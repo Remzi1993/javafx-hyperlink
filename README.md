@@ -1,6 +1,6 @@
 # BrowserHyperlink
 
-[![Maven Central](https://img.shields.io/maven-central/v/info.remzi/javafx-hyperlink.svg)](https://central.sonatype.com/artifact/info.remzi/javafx-hyperlink)![License](https://img.shields.io/github/license/Remzi1993/javafx-hyperlink.svg)
+[![Maven Central](https://img.shields.io/maven-central/v/info.remzi/javafx-hyperlink.svg)](https://central.sonatype.com/artifact/info.remzi/javafx-hyperlink) ![License](https://img.shields.io/github/license/Remzi1993/javafx-hyperlink.svg)
 
 > A drop‑in **Java / JavaFX** replacement for  
 > `javafx.scene.control.Hyperlink` that always opens its target URI—`http`, `https`, `mailto`, custom schemes—in the
@@ -57,3 +57,10 @@ BrowserHyperlink support = new BrowserHyperlink("Mail support", "mailto:support@
    ```bash
    ./mvnw clean deploy
    ```
+## 🤝 Contributing
+1. Fork → feature branch → PR.
+2. Follow conventional commits (feat:, fix:, etc.).
+3. Ensure ```mvn verify``` stays green and add Javadoc for new APIs.
+
+## 📄 License
+This project is licensed under the [MIT License](https://github.com/Remzi1993/javafx-hyperlink/blob/main/LICENSE)
