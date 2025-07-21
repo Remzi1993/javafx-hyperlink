@@ -7,7 +7,7 @@ Any pre‑release versions (alpha, beta, RC, snapshots) are **experimental** and
 
 | Version                                     | Supported |
 |---------------------------------------------|-----------|
-| Latest stable (e.g. 1.0.1)                  | ✅         |
+| Latest stable                               | ✅         |
 | Any previous release                        | ❌         |
 | Pre‑releases (alpha / beta / RC / snapshot) | ❌         |
 
