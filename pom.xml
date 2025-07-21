@@ -107,9 +107,6 @@
                     <!-- Primary key fingerprint (40‑hex characters or short ID) -->
                     <keyname>BBE9A71DDD0E659E23382EB1F5683DA549E22DDB</keyname>
 
-                    <!-- Let Maven read the pass‑phrase from an ENV variable -->
-                    <passphrase>${env.MAVEN_GPG_PASSPHRASE}</passphrase>
-
                     <!-- Use loopback so gpg doesn't launch pinentry in CI -->
                     <gpg.useagent>false</gpg.useagent>
                     <gpg.executable>gpg</gpg.executable>
