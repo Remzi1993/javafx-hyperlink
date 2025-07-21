@@ -120,12 +120,9 @@
                 <!-- Load as a build extension so a plain `mvn deploy` just works -->
                 <extensions>true</extensions>
                 <configuration>
-                    <!-- ID that matches the <server> entry in settings.xml -->
                     <publishingServerId>central</publishingServerId>
-
-                    <!-- Optional but nice in CI -->
-                    <autoPublish>true</autoPublish>      <!-- publish without manual click -->
-                    <waitUntil>published</waitUntil>     <!-- block until Central says “done” -->
+                    <autoPublish>true</autoPublish>
+                    <waitUntil>published</waitUntil>
                 </configuration>
             </plugin>
         </plugins>
