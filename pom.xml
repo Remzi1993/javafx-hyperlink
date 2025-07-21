@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>info.remzi</groupId>
+    <artifactId>javafx-hyperlink</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Compile against the minimum JDK JavaFX 24 supports -->
+        <java.version>22</java.version>
+
+        <!-- Dependency / plugin versions -->
+        <javafx.version>24.0.2</javafx.version>
+        <maven.compiler.plugin.version>3.12.1</maven.compiler.plugin.version>
+        <maven.source.plugin.version>3.3.0</maven.source.plugin.version>
+        <maven.javadoc.plugin.version>3.6.3</maven.javadoc.plugin.version>
+        <maven.gpg.plugin.version>3.2.2</maven.gpg.plugin.version>
+        <central.publishing.plugin.version>0.8.0</central.publishing.plugin.version>
+    </properties>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>A clickable JavaFX Hyperlink that opens in the default web browser</description>
+    <url>https://github.com/Remzi1993/javafx-hyperlink</url>
+
+    <licenses>
+        <license>
+            <name>The MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>Remzi1993</id>
+            <name>Remzi Cavdar</name>
+            <email>ict@remzi.info</email>
+            <url>https://remzi.info</url>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/Remzi1993/javafx-hyperlink.git</connection>
+        <developerConnection>scm:git:ssh://github.com/Remzi1993/javafx-hyperlink.git</developerConnection>
+        <url>https://github.com/Remzi1993/javafx-hyperlink</url>
+    </scm>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${javafx.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Java compilation -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.version}</version>
+                <configuration>
+                    <release>${java.version}</release>
+                </configuration>
+            </plugin>
+
+            <!-- Source + Javadoc JARs -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven.source.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals><goal>jar</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven.javadoc.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals><goal>jar</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Sign everything with GPG -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>${maven.gpg.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals><goal>sign</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Upload to Maven Central Portal -->
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>${central.publishing.plugin.version}</version>
+                <!-- Load as a build extension so a plain `mvn deploy` just works -->
+                <extensions>true</extensions>
+                <configuration>
+                    <!-- ID that matches the <server> entry in settings.xml -->
+                    <publishingServerId>central</publishingServerId>
+
+                    <!-- Optional but nice in CI -->
+                    <autoPublish>true</autoPublish>      <!-- publish without manual click -->
+                    <waitUntil>published</waitUntil>     <!-- block until Central says “done” -->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
