@@ -2,8 +2,14 @@ package info.remzi.javafx.hyperlink;
 
 import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
+
 import java.awt.Desktop;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Drop-in replacement for JavaFX {@code Hyperlink}
@@ -12,6 +18,7 @@ import java.net.URI;
  * @author Remzi Cavdar - ict@remzi.info
  */
 public class BrowserHyperlink extends Hyperlink {
+    private static final Logger LOG = Logger.getLogger(BrowserHyperlink.class.getName());
 
     /**
      * Default constructor for BrowserHyperlink.
@@ -48,15 +55,27 @@ public class BrowserHyperlink extends Hyperlink {
      * Sets the URL for the hyperlink and defines the action to open it in the system browser.
      *
      * @param url The URL to open when the hyperlink is clicked.
+     * @throws NullPointerException if url is null
      */
     public void setUrl(String url) {
+        Objects.requireNonNull(url, "url");
         setOnAction(e -> {
-            if (Desktop.isDesktopSupported()) {
-                try {
-                    Desktop.getDesktop().browse(new URI(url));
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+            try {
+                URI uri = new URI(url);
+
+                if (Desktop.isDesktopSupported()
+                        && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                    Desktop.getDesktop().browse(uri);
+                } else {
+                    LOG.warning("Desktop browse action is not supported on this platform; cannot open: " + uri);
                 }
+
+            } catch (URISyntaxException ex) {
+                LOG.log(Level.WARNING, "Invalid URL: " + url, ex);
+            } catch (IOException ex) {
+                LOG.log(Level.WARNING, "Failed to open browser for URL: " + url, ex);
+            } catch (SecurityException ex) {
+                LOG.log(Level.WARNING, "Permission denied to open URL: " + url, ex);
             }
         });
     }
