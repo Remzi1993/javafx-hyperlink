@@ -13,19 +13,23 @@ jobs:
     runs-on: dependency-submission
     steps:
       - uses: actions/checkout@v4
-        # Ensures the same JDK is used
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '24'
 
       - name: Make Maven Wrapper executable (Linux)
+        if: runner.os == 'Linux'
         run: |
           sed -i 's/\r$//' mvnw
           chmod +x mvnw
 
-      # Submit dependency graph for Maven
+      - name: Make Maven Wrapper executable (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          sed -i '' 's/\r$//' mvnw
+          chmod +x mvnw
+
       - uses: advanced-security/maven-dependency-submission-action@v4
         with:
-          # optional: run Maven in batch/quiet mode
           maven-args: "-B -V"
