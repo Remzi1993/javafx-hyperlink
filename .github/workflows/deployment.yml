@@ -18,60 +18,43 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # keep full history in case you need tag/commit metadata
+          fetch-depth: 0
 
-      - name: Set up JDK 24 (Temurin)
+      # JDK + credentials for Sonatype Central; writes ~/.m2/settings.xml with <server id="central">
+      - name: Set up JDK 24 (Temurin) + Central credentials
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "24"
           cache: maven
+          server-id: central
+          server-username: CENTRAL_USERNAME
+          server-password: CENTRAL_PASSWORD
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
 
-      - name: Make Maven wrapper executable (fix line endings + chmod)
+      - name: Make Maven Wrapper executable (fix line endings + chmod)
         run: |
           sed -i 's/\r$//' mvnw
           chmod +x mvnw
 
-      # Import GPG private key for signing (maven-gpg-plugin with loopback pinentry)
-      - name: Import GPG private key
+      - name: Import GPG private key (for maven-gpg-plugin)
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.gnupg
           chmod 700 ~/.gnupg
           echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import
-          # Ensure non-interactive loopback pinentry works in CI
+          # non-interactive pinentry
           echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
           gpgconf --kill gpg-agent
-          # Optional: show the imported key ID (no private material is printed)
+          # optional visibility (no secrets printed)
           gpg --list-secret-keys --keyid-format LONG
-
-      # Provide Sonatype Central credentials to Maven
-      # The <id> must match <publishingServerId>central</publishingServerId> in your POM
-      - name: Configure Maven settings.xml (Sonatype Central)
-        env:
-          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
-          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
-        run: |
-          mkdir -p ~/.m2
-          cat > ~/.m2/settings.xml <<'XML'
-          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
-            <servers>
-              <server>
-                <id>central</id>
-                <username>${env.CENTRAL_USERNAME}</username>
-                <password>${env.CENTRAL_PASSWORD}</password>
-              </server>
-            </servers>
-          </settings>
-          XML
 
       - name: Build & Deploy to Maven Central
         env:
-          # Required by maven-gpg-plugin when bestPractices=true
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           ./mvnw -V -B -ntp clean deploy
