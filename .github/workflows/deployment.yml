@@ -14,13 +14,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
+    env:
+      CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+      CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+
     steps:
       - name: Check out
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # JDK + Sonatype Central credentials -> writes ~/.m2/settings.xml with <server id="central">
+      # Writes ~/.m2/settings.xml with <server id="central"> that references ${env.CENTRAL_USERNAME}/${env.CENTRAL_PASSWORD}
       - name: Set up JDK 24 (Temurin) + Central credentials
         uses: actions/setup-java@v4
         with:
@@ -30,73 +34,42 @@ jobs:
           server-id: central
           server-username: CENTRAL_USERNAME
           server-password: CENTRAL_PASSWORD
-        env:
-          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
-          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
 
       - name: Make Maven Wrapper executable (fix line endings + chmod)
         run: |
           sed -i 's/\r$//' mvnw
           chmod +x mvnw
 
-      # Import your GPG private key
-      - name: Import GPG private key
+      - name: Import GPG private key (for maven-gpg-plugin) and warm up agent
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE:  ${{ secrets.GPG_PASSPHRASE }}
         run: |
           mkdir -p ~/.gnupg
           chmod 700 ~/.gnupg
+          echo "use-agent" >> ~/.gnupg/gpg.conf
+          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+          gpgconf --kill gpg-agent
+
+          # Import key
           echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import
-          # display fingerprint/keyid only (no secret material printed)
+
+          # Preload passphrase into gpg-agent by doing a dummy sign once
+          # (this avoids passing any passphrase property to Maven)
+          echo "warmup" > /tmp/warmup.txt
+          echo "$GPG_PASSPHRASE" | \
+            gpg --batch --yes --pinentry-mode loopback --passphrase-fd 0 \
+                --local-user 0x09ADA3A346567D4DBCC95D5761998A60B3A5A289 \
+                --output /tmp/warmup.sig --sign /tmp/warmup.txt
+          rm -f /tmp/warmup.txt /tmp/warmup.sig
+
+          # Show key (no secrets printed)
           gpg --list-secret-keys --keyid-format LONG
 
-      # Configure gpg-agent and PRESET the passphrase (so mvn doesn't need MAVEN_GPG_PASSPHRASE)
-      - name: Preload GPG passphrase into agent
-        env:
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          # Optional: set this if you want to target a specific key (recommended)
-          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-        run: |
-          # Ensure gnupg2 is present (for gpg-preset-passphrase on Ubuntu)
-          sudo apt-get update -y
-          sudo apt-get install -y gnupg2
-
-          # Configure agent to accept preset passphrases (and allow loopback if needed)
-          {
-            echo "allow-preset-passphrase"
-            echo "allow-loopback-pinentry"
-          } >> ~/.gnupg/gpg-agent.conf
-
-          # Ensure non-interactive pinentry behavior is allowed
-          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
-
-          # Restart agent to pick up config
-          gpgconf --kill gpg-agent || true
-          gpgconf --launch gpg-agent
-
-          # Find the keygrip of your signing key
-          # If GPG_KEY_ID is provided, use it; else just take the first secret key's keygrip
-          KEYGRIP=$(gpg --list-secret-keys --with-keygrip --keyid-format LONG ${GPG_KEY_ID:+$GPG_KEY_ID} | awk '/Keygrip/ {print $3; exit}')
-          if [ -z "$KEYGRIP" ]; then
-            echo "::error::Could not determine GPG keygrip"; exit 1
-          fi
-          echo "Using keygrip: $KEYGRIP"
-
-          # Locate gpg-preset-passphrase binary
-          PRESET_BIN=""
-          for p in "$(command -v gpg-preset-passphrase)" /usr/lib/gnupg2/gpg-preset-passphrase /usr/lib/gnupg/gpg-preset-passphrase; do
-            if [ -x "$p" ]; then PRESET_BIN="$p"; break; fi
-          done
-          if [ -z "$PRESET_BIN" ]; then
-            echo "::error::gpg-preset-passphrase not found"; exit 1
-          fi
-          echo "Using preset tool: $PRESET_BIN"
-
-          # Preload the passphrase into the agent for this keygrip
-          # From now on gpg-agent will answer passphrase prompts for this key non-interactively
-          echo -n "$GPG_PASSPHRASE" | "$PRESET_BIN" --preset "$KEYGRIP"
+      - name: (Optional) Show Effective Settings (masks passwords)
+        run: ./mvnw -V -B -ntp help:effective-settings -DshowPasswords=false
 
       - name: Build & Deploy to Maven Central
         run: |
-          # maven-gpg-plugin will invoke gpg; gpg-agent (preloaded) supplies the passphrase.
           ./mvnw -V -B -ntp clean deploy
