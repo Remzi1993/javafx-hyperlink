@@ -20,7 +20,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      # JDK + credentials for Sonatype Central; writes ~/.m2/settings.xml with <server id="central">
+      # JDK + Sonatype Central credentials -> writes ~/.m2/settings.xml with <server id="central">
       - name: Set up JDK 24 (Temurin) + Central credentials
         uses: actions/setup-java@v4
         with:
@@ -39,22 +39,64 @@ jobs:
           sed -i 's/\r$//' mvnw
           chmod +x mvnw
 
-      - name: Import GPG private key (for maven-gpg-plugin)
+      # Import your GPG private key
+      - name: Import GPG private key
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.gnupg
           chmod 700 ~/.gnupg
           echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import
-          # non-interactive pinentry
-          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
-          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
-          gpgconf --kill gpg-agent
-          # optional visibility (no secrets printed)
+          # display fingerprint/keyid only (no secret material printed)
           gpg --list-secret-keys --keyid-format LONG
 
-      - name: Build & Deploy to Maven Central
+      # Configure gpg-agent and PRESET the passphrase (so mvn doesn't need MAVEN_GPG_PASSPHRASE)
+      - name: Preload GPG passphrase into agent
         env:
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          # Optional: set this if you want to target a specific key (recommended)
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
         run: |
+          # Ensure gnupg2 is present (for gpg-preset-passphrase on Ubuntu)
+          sudo apt-get update -y
+          sudo apt-get install -y gnupg2
+
+          # Configure agent to accept preset passphrases (and allow loopback if needed)
+          {
+            echo "allow-preset-passphrase"
+            echo "allow-loopback-pinentry"
+          } >> ~/.gnupg/gpg-agent.conf
+
+          # Ensure non-interactive pinentry behavior is allowed
+          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+
+          # Restart agent to pick up config
+          gpgconf --kill gpg-agent || true
+          gpgconf --launch gpg-agent
+
+          # Find the keygrip of your signing key
+          # If GPG_KEY_ID is provided, use it; else just take the first secret key's keygrip
+          KEYGRIP=$(gpg --list-secret-keys --with-keygrip --keyid-format LONG ${GPG_KEY_ID:+$GPG_KEY_ID} | awk '/Keygrip/ {print $3; exit}')
+          if [ -z "$KEYGRIP" ]; then
+            echo "::error::Could not determine GPG keygrip"; exit 1
+          fi
+          echo "Using keygrip: $KEYGRIP"
+
+          # Locate gpg-preset-passphrase binary
+          PRESET_BIN=""
+          for p in "$(command -v gpg-preset-passphrase)" /usr/lib/gnupg2/gpg-preset-passphrase /usr/lib/gnupg/gpg-preset-passphrase; do
+            if [ -x "$p" ]; then PRESET_BIN="$p"; break; fi
+          done
+          if [ -z "$PRESET_BIN" ]; then
+            echo "::error::gpg-preset-passphrase not found"; exit 1
+          fi
+          echo "Using preset tool: $PRESET_BIN"
+
+          # Preload the passphrase into the agent for this keygrip
+          # From now on gpg-agent will answer passphrase prompts for this key non-interactively
+          echo -n "$GPG_PASSPHRASE" | "$PRESET_BIN" --preset "$KEYGRIP"
+
+      - name: Build & Deploy to Maven Central
+        run: |
+          # maven-gpg-plugin will invoke gpg; gpg-agent (preloaded) supplies the passphrase.
           ./mvnw -V -B -ntp clean deploy
