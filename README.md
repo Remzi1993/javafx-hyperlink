@@ -53,7 +53,12 @@ BrowserHyperlink support = new BrowserHyperlink("Mail support", "mailto:support@
 ## 🛠️ Developing / releasing the library
 
 1. Insert your GPG key fingerprint in pom.xml ```<keyname>YOUR_40_HEX_FINGERPRINT</keyname>```
-2. Build & publish to Maven Central:
+2. Verify and create manual builds:
+   ````bash
+   ./mvnw clean verify
+   ````
+   Upload everything under **target** excluding subdirectories to GitHub
+3. Build & publish to Maven Central:
    ```bash
    ./mvnw clean deploy
    ```
