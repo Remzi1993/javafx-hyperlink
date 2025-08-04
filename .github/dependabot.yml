@@ -23,7 +23,7 @@ updates:
     # Group related updates into fewer PRs
     groups:
       maven-plugins:
-        dependency-type: "development"     # only plugin/build deps
+        dependency-type: "development"
         patterns:
           - "org.apache.maven.plugins:*"
           - "org.sonatype.central:central-publishing-maven-plugin"
