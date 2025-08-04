@@ -33,7 +33,7 @@
     <licenses>
         <license>
             <name>The MIT License</name>
-            <url>https://opensource.org/licenses/MIT</url>
+            <url>https://github.com/Remzi1993/javafx-hyperlink/blob/main/LICENSE</url>
         </license>
     </licenses>
 
@@ -41,15 +41,20 @@
         <developer>
             <id>Remzi1993</id>
             <name>Remzi Cavdar</name>
+            <roles>
+                <role>Maintainer</role>
+                <role>Software engineer</role>
+            </roles>
+            <timezone>Europe/Amsterdam</timezone>
             <email>ict@remzi.info</email>
             <url>https://remzi.info</url>
         </developer>
     </developers>
 
     <scm>
+        <url>https://github.com/Remzi1993/javafx-hyperlink</url>
         <connection>scm:git:git://github.com/Remzi1993/javafx-hyperlink.git</connection>
         <developerConnection>scm:git:ssh://github.com/Remzi1993/javafx-hyperlink.git</developerConnection>
-        <url>https://github.com/Remzi1993/javafx-hyperlink</url>
     </scm>
 
     <dependencies>
