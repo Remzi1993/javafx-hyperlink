@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "06:00"
+      time: "08:00"
       timezone: "Europe/Amsterdam"
 
     # Limit noise
@@ -30,3 +30,13 @@ updates:
       javafx:
         patterns:
           - "org.openjfx:*"
+
+    # Keep JavaFX on the 24.x STABLE line for now.
+    # Why: New JavaFX majors (25.x, 26.x, …) start as -ea pre-releases; we don’t want PRs for pre-releases
+    # or for the next major until we explicitly decide to move.
+    # The range "[25,)" means "25.0.0 and above" — i.e., ignore any update >= 25 (including 25-ea+N and future majors).
+    # When ready to adopt 25.x stable, change this to "[26,)" (to stay on 25.x), or remove the rule entirely.
+    ignore:
+      - dependency-name: "org.openjfx:*"
+        versions:
+          - "[25,)"
