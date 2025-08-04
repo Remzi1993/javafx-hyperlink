@@ -60,7 +60,7 @@ BrowserHyperlink support = new BrowserHyperlink("Mail support", "mailto:support@
 ## 🤝 Contributing
 1. Fork → feature branch → PR.
 2. Follow conventional commits (feat:, fix:, etc.).
-3. Ensure ```mvn verify``` stays green and add Javadoc for new APIs.
+3. Ensure ```./mvnw clean verify``` stays green and add Javadoc for new APIs.
 
 ## 📄 License
 This project is licensed under the [MIT License](https://github.com/Remzi1993/javafx-hyperlink/blob/main/LICENSE)
