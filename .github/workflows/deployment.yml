@@ -18,7 +18,7 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # lets you read the tag/commit info if you ever need it
+          fetch-depth: 0   # keep full history in case you need tag/commit metadata
 
       - name: Set up JDK 24 (Temurin)
         uses: actions/setup-java@v4
@@ -27,23 +27,28 @@ jobs:
           java-version: "24"
           cache: maven
 
-      - name: Make Maven Wrapper executable (LF line endings + chmod)
+      - name: Make Maven wrapper executable (fix line endings + chmod)
         run: |
           sed -i 's/\r$//' mvnw
           chmod +x mvnw
 
-      # Import GPG private key (for maven-gpg-plugin signing)
+      # Import GPG private key for signing (maven-gpg-plugin with loopback pinentry)
       - name: Import GPG private key
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: |
-          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
-          # good practice for non-interactive pinentry
+          mkdir -p ~/.gnupg
+          chmod 700 ~/.gnupg
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import
+          # Ensure non-interactive loopback pinentry works in CI
           echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
           gpgconf --kill gpg-agent
+          # Optional: show the imported key ID (no private material is printed)
+          gpg --list-secret-keys --keyid-format LONG
 
-      # Provide Sonatype Central credentials to Maven (id must match <publishingServerId>central</publishingServerId> in pom.xml)
+      # Provide Sonatype Central credentials to Maven
+      # The <id> must match <publishingServerId>central</publishingServerId> in your POM
       - name: Configure Maven settings.xml (Sonatype Central)
         env:
           CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
@@ -64,15 +69,9 @@ jobs:
           </settings>
           XML
 
-      - name: Show Effective Settings (sanity check; masks secrets)
-        run: ./mvnw -V -B -ntp help:effective-settings -DshowPasswords=false
-
-      - name: Deploy to Maven Central - Sonatype
+      - name: Build & Deploy to Maven Central
         env:
-          # gpg passphrase supplied via system property so you don't need to hardcode it in pom.xml
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          # Helps pinentry in headless CI
-          GPG_TTY: ${{ env.GITHUB_WORKSPACE }}
+          # Required by maven-gpg-plugin when bestPractices=true
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          ./mvnw -V -B -ntp clean deploy \
-            -Dgpg.passphrase="${GPG_PASSPHRASE}"
+          ./mvnw -V -B -ntp clean deploy
