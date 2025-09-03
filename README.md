@@ -31,7 +31,7 @@
 <dependency>
     <groupId>info.remzi</groupId>
     <artifactId>javafx-hyperlink</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.3</version>
 </dependency>
 ```
 
